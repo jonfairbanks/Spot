@@ -10,4 +10,4 @@ const spotSchema = new Schema({
   fetchedAt: { type: Date, default: Date.now },
 }, { versionKey: false });
 
-mongoose.model('spotPrices', spotSchema);
+mongoose.model('spot', spotSchema);
