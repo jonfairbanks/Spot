@@ -9,4 +9,4 @@ const spotSchema = new Schema({
   createdAt: Date,
 }, { versionKey: false });
 
-mongoose.model('spot', spotSchema);
+module.exports = mongoose.model('spot', spotSchema);

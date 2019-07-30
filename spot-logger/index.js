@@ -9,6 +9,7 @@ const compression = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
 const stoppable = require('stoppable');
+const routes = require('./routes');
 
 require('dotenv').config();
 
@@ -60,6 +61,9 @@ cron.schedule('* * * * *', () => {
     .catch(err => console.log("There was an error getting Spot prices: " + err));
   });
 });
+
+// Register routes
+app.use('/api/v1', routes);
 
 // Health check endpoint
 app.get('/status', (req, res) => {
