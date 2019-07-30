@@ -37,7 +37,7 @@ require('./models/spot');
 
 // Poll for new spot price data every 1 minute
 cron.schedule('* * * * *', () => {
-  console.log("Getting current spot prices...")
+  console.log("\nSpot prices as of " + Date.now() +"...")
   //const headers = { Origin: 'https://www.kitco.com' };
   //axios.get(`https://proxy.kitco.com/getPM?symbol=AG,AU,PD,PT`, { headers })
   var metals = ['gold', 'silver', 'platinum', 'palladium'];
@@ -52,7 +52,7 @@ cron.schedule('* * * * *', () => {
       var price_data = resp.data['chartdata'].slice(-1)[0];
       var price_ts = price_data[0];
       var price_usd = price_data[1];
-      console.log(price_usd);
+      console.log(metal.toUpperCase() + ': $' + price_usd + " USD");
     })
     .catch(err => console.log("There was an error getting Spot prices: " + err));
   });
@@ -66,5 +66,5 @@ app.get('/status', (req, res) => {
 
 // Launch the app with stoppable
 stoppable(app.listen(port, () =>
-  console.log(`spot-logger is running on port ${port}!\n`),
+  console.log(`spot-logger is running on port ${port}!`),
 ), 10000);
