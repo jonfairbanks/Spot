@@ -3,7 +3,7 @@ let Spot = require('../models/spot');
 
 // Create a new goal
 exports.get = (req, res) => {
-  query = req.query || {};
+  let query = req.query || {};
 
   Spot.apiQuery(query).find({})
     // limit the information returned (server side) – e.g. no password
