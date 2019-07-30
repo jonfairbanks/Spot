@@ -32,31 +32,33 @@ mongoose.connect(
     useFindAndModify: false,
   },
 );
-
 require('./models/spot');
+const Spot = mongoose.model('spot');
 
 // Poll for new spot price data every 1 minute
 cron.schedule('* * * * *', () => {
-  console.log("\nSpot prices as of " + Date.now() +"...")
-  //const headers = { Origin: 'https://www.kitco.com' };
-  //axios.get(`https://proxy.kitco.com/getPM?symbol=AG,AU,PD,PT`, { headers })
+  console.log("\nSpot prices as of " + Date.now() + "...");
   var metals = ['gold', 'silver', 'platinum', 'palladium'];
   metals.forEach(metal => {
-    
     var endpoint = 'https://www.apmex.com/spotprice/gethistoricalchart?metalname=' + metal + '&_=' + Date.now();
     axios.get(endpoint)
     .then(resp => {
-      /* 
-        ~~~~~ TO DO: Log to database with the schema ~~~~~
-      */
+      // Log current prices
       var price_data = resp.data['chartdata'].slice(-1)[0];
-      var price_ts = price_data[0];
-      var price_usd = price_data[1];
-      console.log(metal.toUpperCase() + ': $' + price_usd + " USD");
+      var updatedAt = price_data[0];
+      var createdAt = Date.now();
+      var spotPrice = price_data[1];
+      console.log(metal.toUpperCase() + ': $' + spotPrice + " USD");
+
+      // Save current prices to database
+      const itemToBeSaved = { metal, spotPrice, updatedAt, createdAt };
+      const item = new Spot(itemToBeSaved);
+      item.save()
+      .then(/* Do stuff */)
+      .catch((err) => console.log("Failed to save " + metal + " to the database: " + err));
     })
     .catch(err => console.log("There was an error getting Spot prices: " + err));
   });
-
 });
 
 // Health check endpoint
