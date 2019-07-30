@@ -37,7 +37,7 @@ const Spot = mongoose.model('spot');
 
 // Poll for new spot price data every 1 minute
 cron.schedule('* * * * *', () => {
-  console.log("\nSpot prices as of " + Date.now() + "...");
+  logger.info("\nSpot prices as of " + Date.now() + "...");
   var metals = ['gold', 'silver', 'platinum', 'palladium'];
   metals.forEach(metal => {
     var endpoint = 'https://www.apmex.com/spotprice/gethistoricalchart?metalname=' + metal + '&_=' + Date.now();
@@ -48,13 +48,13 @@ cron.schedule('* * * * *', () => {
       var updatedAt = price_data[0];
       var createdAt = Date.now();
       var spotPrice = price_data[1];
-      console.log(metal.toUpperCase() + ': $' + spotPrice + " USD");
+      logger.info(metal.toUpperCase() + ': $' + spotPrice + " USD");
 
       // Save current prices to database
       const itemToBeSaved = { metal, spotPrice, updatedAt, createdAt };
       const item = new Spot(itemToBeSaved);
       item.save()
-      .then(/* Do stuff */)
+      .then(console.log(metal.toUpperCase() + " price saved to DB @ " + Date.now()))
       .catch((err) => console.log("Failed to save " + metal + " to the database: " + err));
     })
     .catch(err => console.log("There was an error getting Spot prices: " + err));
