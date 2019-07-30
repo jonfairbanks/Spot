@@ -38,16 +38,16 @@ const Spot = mongoose.model('spot');
 // Poll for new spot price data every 1 minute
 cron.schedule('* * * * *', () => {
   logger.info("\nSpot prices as of " + Date.now() + "...");
-  var metals = ['gold', 'silver', 'platinum', 'palladium'];
+  let metals = ['gold', 'silver', 'platinum', 'palladium'];
   metals.forEach(metal => {
-    var endpoint = 'https://www.apmex.com/spotprice/gethistoricalchart?metalname=' + metal + '&_=' + Date.now();
+    let endpoint = 'https://www.apmex.com/spotprice/gethistoricalchart?metalname=' + metal + '&_=' + Date.now();
     axios.get(endpoint)
     .then(resp => {
       // Log current prices
-      var price_data = resp.data['chartdata'].slice(-1)[0];
-      var updatedAt = price_data[0];
-      var createdAt = Date.now();
-      var spotPrice = price_data[1];
+      let price_data = resp.data['chartdata'].slice(-1)[0];
+      let updatedAt = price_data[0];
+      let createdAt = Date.now();
+      let spotPrice = price_data[1];
       logger.info(metal.toUpperCase() + ': $' + spotPrice + " USD");
 
       // Save current prices to database
@@ -68,5 +68,5 @@ app.get('/status', (req, res) => {
 
 // Launch the app with stoppable
 stoppable(app.listen(port, () =>
-  console.log(`spot-logger is running on port ${port}!`),
+  console.log(`spot-logger is running on port ${port}!\n`),
 ), 10000);
