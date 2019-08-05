@@ -23,16 +23,25 @@ export default class HomeScreen extends React.Component {
     const state = this.state;
     return (
       <View style={styles.container}>
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.contentContainer}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+          <DevelopmentModeNotice />
+          <View style={styles.helpContainer}>
+            <TouchableOpacity onPress={handleSitePress} style={styles.helpLink}>
+              <Text style={styles.totalBanner}>
+                Portfolio Balance
+              </Text>
+              <Text style={styles.totalDollarAmt}>
+                $1,798.50 USD
+              </Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.welcomeContainer}>
-            <DevelopmentModeNotice />
             <LineChart
               data={{
-                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
                 datasets: [{
                   data: [
+                    Math.random() * 100,
                     Math.random() * 100,
                     Math.random() * 100,
                     Math.random() * 100,
@@ -76,7 +85,7 @@ export default class HomeScreen extends React.Component {
           <View style={styles.helpContainer}>
             <TouchableOpacity onPress={handleSitePress} style={styles.helpLink}>
               <Text style={styles.helpLinkText}>
-                Fairbanks.io
+                Spot
               </Text>
             </TouchableOpacity>
           </View>
