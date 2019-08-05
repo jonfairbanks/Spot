@@ -2,7 +2,18 @@ import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 
-export default function LinksScreen() {
+function getSpotPrice() {
+  return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=silver&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      return responseJson.spotPrice;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+export default function PortfolioScreen() {
   return (
     <ScrollView style={styles.container}>
       {/**
@@ -14,8 +25,8 @@ export default function LinksScreen() {
   );
 }
 
-LinksScreen.navigationOptions = {
-  title: 'Links',
+PortfolioScreen.navigationOptions = {
+  title: 'Portfolio',
 };
 
 const styles = StyleSheet.create({
