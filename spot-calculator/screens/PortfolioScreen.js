@@ -13,7 +13,6 @@ export default class PortfolioScreen extends React.Component {
     return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=silver&per_page=1')
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson[0]);
         this.setState({
           isLoading: false,
           dataSource: responseJson[0].spotPrice,
