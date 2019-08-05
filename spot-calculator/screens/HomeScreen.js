@@ -25,29 +25,30 @@ export default class HomeScreen extends React.Component {
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           <DevelopmentModeNotice />
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={handleSitePress} style={styles.helpLink}>
-              <Text style={styles.totalBanner}>
-                Portfolio Balance
-              </Text>
+          <View style={styles.totalContainer}>
+            <TouchableOpacity onPress={handleTotalPress} style={styles.touchLink}>
               <Text style={styles.totalDollarAmt}>
                 $1,798.50 USD
               </Text>
+              <Text style={styles.totalBanner}>
+                Current Portfolio Balance
+              </Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.welcomeContainer}>
+
+          <View style={styles.chartContainer}>
             <LineChart
               data={{
-                labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                labels: ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat'],
                 datasets: [{
                   data: [
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100
+                    Math.random() * 1000,
+                    Math.random() * 1000,
+                    Math.random() * 1000,
+                    Math.random() * 1000,
+                    Math.random() * 1000,
+                    Math.random() * 1000,
+                    Math.random() * 1000
                   ]
                 }]
               }}
@@ -76,15 +77,15 @@ export default class HomeScreen extends React.Component {
             <Table>
               <Row data={state.tableHead} flexArr={[1, 1, 1, 1]} style={styles.head} textStyle={styles.text}/>
               <TableWrapper style={styles.wrapper}>
-                <Col data={state.tableTitle} style={styles.title} heightArr={[28,28]} textStyle={styles.text}/>
+                <Col data={state.tableTitle} style={styles.title} heightArr={[35,35]} textStyle={styles.text}/>
                 <Rows data={state.tableData} flexArr={[1, 1, 1]} style={styles.row} textStyle={styles.text}/>
               </TableWrapper>
             </Table>
           </View>
 
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={handleSitePress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>
+          <View style={styles.footerContainer}>
+            <TouchableOpacity onPress={handleSitePress} style={styles.touchLink}>
+              <Text style={styles.footerLinkText}>
                 Spot
               </Text>
             </TouchableOpacity>
@@ -109,6 +110,10 @@ function DevelopmentModeNotice() {
   }
 }
 
+function handleTotalPress() {
+  this.props.navigation.navigate('Portfolio');
+}
+
 function handleSitePress() {
   WebBrowser.openBrowserAsync(
     'https://github.com/Fairbanks-io/Spot'
@@ -121,43 +126,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   developmentModeText: {
-    marginBottom: 20,
+    marginBottom: 10,
     color: 'rgba(0,0,0,0.4)',
     fontSize: 14,
     lineHeight: 19,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   contentContainer: {
     paddingTop: 30,
   },
-  welcomeContainer: {
+  chartContainer: {
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 20,
   },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  helpContainer: {
-    marginTop: 15,
+  totalContainer: {
+    marginTop: 5,
     alignItems: 'center',
   },
-  helpLink: {
-    paddingVertical: 15,
+  totalBanner: {
+    paddingVertical: 5,
+    color: 'grey',
+    fontSize: 12,
+    textAlign: 'center'
   },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
+  totalDollarAmt: {
+    fontSize: 25
   },
   tableContainer: { 
     flex: 1, 
@@ -177,9 +171,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#f6f8fa'
   },
   row: {  
-    height: 28  
+    height: 35  
   },
   text: { 
     textAlign: 'center' 
-  }
+  },
+  footerContainer: {
+    marginTop: 5,
+    alignItems: 'center',
+  },
+  footerLinkText: {
+    fontSize: 14,
+    color: '#2e78b7',
+  },
+  touchLink: {
+    paddingVertical: 5,
+  },
 });
