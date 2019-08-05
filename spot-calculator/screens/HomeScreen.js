@@ -102,7 +102,7 @@ function DevelopmentModeNotice() {
 
 function handleSitePress() {
   WebBrowser.openBrowserAsync(
-    'https://fairbanks.io'
+    'https://github.com/Fairbanks-io/Spot'
   );
 }
 
