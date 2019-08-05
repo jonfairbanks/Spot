@@ -1,6 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Text, View, StyleSheet } from 'react-native';
-
+import { ActivityIndicator, Text, View, StyleSheet, AsyncStorage } from 'react-native';
 import { MonoText } from '../components/StyledText';
 
 export default class PortfolioScreen extends React.Component {
@@ -11,18 +10,16 @@ export default class PortfolioScreen extends React.Component {
 
   componentDidMount(){
     return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=silver&per_page=1')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({
-          isLoading: false,
-          dataSource: responseJson[0].spotPrice,
-        }, function(){
-
-        });
-      })
-      .catch((error) =>{
-        console.error(error);
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        isLoading: false,
+        dataSource: responseJson[0].spotPrice,
       });
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
   }
 
   render(){
@@ -35,10 +32,27 @@ export default class PortfolioScreen extends React.Component {
     }
 
     return(
-      <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-        <MonoText style={styles.codeHighlightText}>
-          Current Silver Spot Price: ${this.state.dataSource} USD/OZ
-        </MonoText>
+      <View style={styles.container}>
+        <View>
+          <Text style={styles.helpLinkText}>
+            Current Silver Spot Price: 
+          </Text>
+        </View>
+        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
+          <MonoText style={styles.codeHighlightText}>
+            ${this.state.dataSource} USD/OZ
+          </MonoText>
+        </View>
+        <View>
+          <Text style={styles.helpLinkText}>
+          {"\n"}Current Portfolio Value: 
+          </Text>
+        </View>
+        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
+          <MonoText style={styles.codeHighlightText}>
+            ${this.state.dataSource * 1} (Based on 1 oz)
+          </MonoText>
+        </View>
       </View>
     );
   }
