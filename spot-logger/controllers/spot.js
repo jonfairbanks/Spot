@@ -1,18 +1,10 @@
-// Import User model
+// Import Spot model
 let Spot = require('../models/spot');
 
-// Create a new goal
 exports.get = (req, res) => {
-  let query = req.query || {};
-
-  Spot.apiQuery(query).find({})
-    // limit the information returned (server side) – e.g. no password
-    //.select('name email username admin')
-    .then(spots => {
-        res.json(spots);
-    })
-    .catch(err => {
-        res.status(422).send(err.errors);
-    });
-
+    let query = req.query || {};
+    
+    Spot.apiQuery(query).find({}).sort({createdAt: '-1'})
+    .then(spots => { res.json(spots) })
+    .catch(err => { res.status(422).send(err.errors) })
 };
