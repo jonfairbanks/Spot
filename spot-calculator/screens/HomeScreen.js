@@ -26,7 +26,7 @@ export default class HomeScreen extends React.Component {
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           <DevelopmentModeNotice />
           <View style={styles.totalContainer}>
-            <TouchableOpacity onPress={handleTotalPress} style={styles.touchLink}>
+            <TouchableOpacity onPress={() => handleTotalPress(this)} style={styles.touchLink}>
               <Text style={styles.totalDollarAmt}>
                 $1,798.50 USD
               </Text>
@@ -110,8 +110,8 @@ function DevelopmentModeNotice() {
   }
 }
 
-function handleTotalPress() {
-  this.props.navigation.navigate('Portfolio');
+function handleTotalPress(context) {
+  context.props.navigation.navigate('Portfolio');
 }
 
 function handleSitePress() {
