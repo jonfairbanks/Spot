@@ -17,6 +17,7 @@ export default class HomeScreen extends React.Component {
         ['', '', '']
       ],
       portfolioBalance: null,
+      portfolioBalanceLastUpdate: 'Never',
       silver: null,
       silverWeight: null,
       gold: null,
@@ -109,7 +110,8 @@ export default class HomeScreen extends React.Component {
 
   setPortfolioBalance() {
     this.setState({
-      portfolioBalance: '$' + this.formatMoney(this.state.silver * 300) + ' USD'
+      portfolioBalance: '$' + this.formatMoney(this.state.silver * 300) + ' USD',
+      portfolioBalanceLastUpdate: Date.now()
     });
   }
 
@@ -223,6 +225,14 @@ export default class HomeScreen extends React.Component {
               </Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.footerContainer}>
+            <TouchableOpacity onPress={() => handleUpdatePress(this)} style={styles.touchLink}>
+              <Text style={styles.footerLinkText}>
+                Last Update: {this.state.portfolioBalanceLastUpdate}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </View>
     );
@@ -245,6 +255,11 @@ function DevelopmentModeNotice() {
 
 function handleTotalPress(context) {
   context.props.navigation.navigate('Portfolio');
+}
+
+function handleUpdatePress(context) {
+  context.setTableSpotPrices();
+  context.setPortfolioBalance();
 }
 
 function handleSitePress() {
