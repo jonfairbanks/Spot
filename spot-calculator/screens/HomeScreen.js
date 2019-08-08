@@ -16,7 +16,15 @@ export default class HomeScreen extends React.Component {
         ['', '', ''],
         ['', '', '']
       ],
-      portfolioBalance: null
+      portfolioBalance: null,
+      silver: null,
+      silverWeight: null,
+      gold: null,
+      goldWeight: null,
+      platinum: null,
+      platinumWeight: null,
+      palladium: null,
+      palladiumWeight: null
     }
   }
 
@@ -84,6 +92,21 @@ export default class HomeScreen extends React.Component {
     });
   }
 
+  getPortfolioWeightsFromStorage() {
+    AsyncStorage.getItem("silver").then((value) => {
+      this.setState({silver: value});
+    }).done();
+    AsyncStorage.getItem("gold").then((value) => {
+      this.setState({gold: value});
+    }).done();
+    AsyncStorage.getItem("platinum").then((value) => {
+      this.setState({platinum: value});
+    }).done();
+    AsyncStorage.getItem("palladium").then((value) => {
+      this.setState({palladium: value});
+    }).done();
+  }
+
   setPortfolioBalance() {
     this.setState({
       portfolioBalance: '$' + this.formatMoney(this.state.silver * 300) + ' USD'
@@ -93,7 +116,7 @@ export default class HomeScreen extends React.Component {
   setTableSpotPrices() {
     this.setState({
       tableData: [
-        ['', '$' + this.formatMoney(this.state.silver), ''],
+        [ this.state.silverWeight + ' oz', '$' + this.formatMoney(this.state.silver), '$' + this.formatMoney(this.state.silver * this.state.silverWeight)],
         ['', '$' + this.formatMoney(this.state.gold), ''],
         ['', '$' + this.formatMoney(this.state.platinum), ''],
         ['', '$' + this.formatMoney(this.state.palladium), '']
@@ -113,15 +136,19 @@ export default class HomeScreen extends React.Component {
   
       return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
     } catch (e) {
-      console.log('Formatting error: ' + e)
+      console.log('Money formatting error: ' + e)
     }
   };
 
-  componentWillMount(){
+  componentWillMount() {
     this.getSilverPrice();
     this.getGoldPrice();
     this.getPlatinumPrice();
     this.getPalladiumPrice();
+  };
+
+  componentDidMount(){
+    this.getPortfolioWeightsFromStorage();
     this.setPortfolioBalance();
   }
 
