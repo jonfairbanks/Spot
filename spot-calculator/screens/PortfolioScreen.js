@@ -7,21 +7,64 @@ import Icon from 'react-native-vector-icons/Ionicons';
 export default class PortfolioScreen extends React.Component {
   constructor(props){
     super(props);
-    this.state ={ isLoading: true}
+    this.state ={ 
+      isLoading: true,
+      silver: '',
+      gold: '',
+      platinum: '',
+      palladium: ''
+    }
   }
 
-  componentDidMount(){
+  getSilverPrice() {
+    var _this = this;
     return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=silver&per_page=1')
     .then((response) => response.json())
     .then((responseJson) => {
-      this.setState({
+      _this.setState({
         isLoading: false,
-        dataSource: responseJson[0].spotPrice,
+        silver: responseJson[0].spotPrice,
       });
     })
     .catch((error) =>{
       console.error(error);
     });
+  }
+
+  getGoldPrice() {
+    var _this = this;
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=gold&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      _this.setState({
+        isLoading: false,
+        gold: responseJson[0].spotPrice,
+      });
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
+  formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
+    try {
+      decimalCount = Math.abs(decimalCount);
+      decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+  
+      const negativeSign = amount < 0 ? "-" : "";
+  
+      let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+      let j = (i.length > 3) ? i.length % 3 : 0;
+  
+      return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+    } catch (e) {
+      console.log('Formatting error: ' + e)
+    }
+  };
+
+  componentDidMount(){
+    this.getSilverPrice();
+    this.getGoldPrice();
   }
 
   render(){
@@ -42,7 +85,18 @@ export default class PortfolioScreen extends React.Component {
         </View>
         <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
           <MonoText style={styles.codeHighlightText}>
-            ${this.state.dataSource} USD/OZ
+            ${this.formatMoney(this.state.silver)} USD/OZ
+          </MonoText>
+        </View>
+
+        <View>
+          <Text style={styles.helpLinkText}>
+          {"\n"}Current Gold Spot Price: 
+          </Text>
+        </View>
+        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
+          <MonoText style={styles.codeHighlightText}>
+            ${this.formatMoney(this.state.gold)} USD/OZ
           </MonoText>
         </View>
         <View>
@@ -52,7 +106,7 @@ export default class PortfolioScreen extends React.Component {
         </View>
         <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
           <MonoText style={styles.codeHighlightText}>
-            ${this.state.dataSource * 1} (Based on 1 oz)
+            ${this.formatMoney(this.state.silver + this.state.gold)}
           </MonoText>
         </View>
         <ActionButton buttonColor="rgba(231,76,60,1)">
