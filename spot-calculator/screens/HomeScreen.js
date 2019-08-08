@@ -11,7 +11,7 @@ export default class HomeScreen extends React.Component {
       tableHead: ['', 'Total Weight', 'Spot Price', 'Total Holdings'],
       tableTitle: ['Silver', 'Gold', 'Platinum', 'Palladium'],
       tableData: [
-        ['10 oz', '$16.35', '$1,635.00'],
+        ['10 oz', '$16.35', '$163.50'],
         ['.10 oz', '$1,635.00', '$163.50'],
         ['', '', ''],
         ['', '', '']
