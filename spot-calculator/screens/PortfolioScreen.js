@@ -46,6 +46,36 @@ export default class PortfolioScreen extends React.Component {
     });
   }
 
+  getPlatinumPrice() {
+    var _this = this;
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=platinum&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      _this.setState({
+        isLoading: false,
+        platinum: responseJson[0].spotPrice,
+      });
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
+  getPalladiumPrice() {
+    var _this = this;
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=palladium&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      _this.setState({
+        isLoading: false,
+        palladium: responseJson[0].spotPrice,
+      });
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
   formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
     try {
       decimalCount = Math.abs(decimalCount);
@@ -65,6 +95,8 @@ export default class PortfolioScreen extends React.Component {
   componentDidMount(){
     this.getSilverPrice();
     this.getGoldPrice();
+    this.getPlatinumPrice();
+    this.getPalladiumPrice();
   }
 
   render(){
@@ -99,6 +131,29 @@ export default class PortfolioScreen extends React.Component {
             ${this.formatMoney(this.state.gold)} USD/OZ
           </MonoText>
         </View>
+
+        <View>
+          <Text style={styles.helpLinkText}>
+          {"\n"}Current Platinum Spot Price: 
+          </Text>
+        </View>
+        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
+          <MonoText style={styles.codeHighlightText}>
+            ${this.formatMoney(this.state.platinum)} USD/OZ
+          </MonoText>
+        </View>
+
+        <View>
+          <Text style={styles.helpLinkText}>
+          {"\n"}Current Palladium Spot Price: 
+          </Text>
+        </View>
+        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
+          <MonoText style={styles.codeHighlightText}>
+            ${this.formatMoney(this.state.palladium)} USD/OZ
+          </MonoText>
+        </View>
+
         <View>
           <Text style={styles.helpLinkText}>
           {"\n"}Current Portfolio Value: 
@@ -109,6 +164,7 @@ export default class PortfolioScreen extends React.Component {
             ${this.formatMoney(this.state.silver + this.state.gold)}
           </MonoText>
         </View>
+
         <ActionButton buttonColor="rgba(231,76,60,1)">
           <ActionButton.Item buttonColor='#9b59b6' title="New Task" onPress={() => console.log("notes tapped!")}>
             <Icon name="md-create" style={styles.actionButtonIcon} />
