@@ -11,12 +11,111 @@ export default class HomeScreen extends React.Component {
       tableHead: ['', 'Total Weight', 'Spot Price', 'Total Holdings'],
       tableTitle: ['Silver', 'Gold', 'Platinum', 'Palladium'],
       tableData: [
-        ['10 oz', '$16.35', '$163.50'],
-        ['.10 oz', '$1,635.00', '$163.50'],
+        ['', '', ''],
+        ['', '', ''],
         ['', '', ''],
         ['', '', '']
-      ]
+      ],
+      portfolioBalance: ''
     }
+  }
+
+  getSilverPrice() {
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=silver&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        isLoading: false,
+        silver: responseJson[0].spotPrice,
+      });
+      this.setTableSpotPrices();
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
+  getGoldPrice() {
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=gold&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        isLoading: false,
+        gold: responseJson[0].spotPrice,
+      });
+      this.setTableSpotPrices();
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
+  getPlatinumPrice() {
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=platinum&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        isLoading: false,
+        platinum: responseJson[0].spotPrice,
+      });
+      this.setTableSpotPrices();
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
+  getPalladiumPrice() {
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=palladium&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        isLoading: false,
+        palladium: responseJson[0].spotPrice,
+      });
+      this.setTableSpotPrices();
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
+  getPortfolioBalance() {
+    
+  }
+
+  setTableSpotPrices() {
+    this.setState({
+      tableData: [
+        ['', '$' + this.formatMoney(this.state.silver), ''],
+        ['', '$' + this.formatMoney(this.state.gold), ''],
+        ['', '$' + this.formatMoney(this.state.platinum), ''],
+        ['', '$' + this.formatMoney(this.state.palladium), '']
+      ]
+    })
+  };
+
+  formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
+    try {
+      decimalCount = Math.abs(decimalCount);
+      decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+  
+      const negativeSign = amount < 0 ? "-" : "";
+  
+      let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+      let j = (i.length > 3) ? i.length % 3 : 0;
+  
+      return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+    } catch (e) {
+      console.log('Formatting error: ' + e)
+    }
+  };
+
+  componentDidMount(){
+    this.getSilverPrice();
+    this.getGoldPrice();
+    this.getPlatinumPrice();
+    this.getPalladiumPrice();
   }
 
   render() {
