@@ -11,12 +11,147 @@ export default class HomeScreen extends React.Component {
       tableHead: ['', 'Total Weight', 'Spot Price', 'Total Holdings'],
       tableTitle: ['Silver', 'Gold', 'Platinum', 'Palladium'],
       tableData: [
-        ['10 oz', '$16.35', '$1,635.00'],
-        ['.10 oz', '$1,635.00', '$163.50'],
+        ['', '', ''],
+        ['', '', ''],
         ['', '', ''],
         ['', '', '']
-      ]
+      ],
+      portfolioBalance: null,
+      portfolioBalanceLastUpdate: 'Never',
+      silver: null,
+      silverWeight: null,
+      gold: null,
+      goldWeight: null,
+      platinum: null,
+      platinumWeight: null,
+      palladium: null,
+      palladiumWeight: null
     }
+  }
+
+  getSilverPrice() {
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=silver&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        isLoading: false,
+        silver: responseJson[0].spotPrice,
+      });
+      this.setTableSpotPrices();
+      this.setPortfolioBalance();
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
+  getGoldPrice() {
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=gold&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        isLoading: false,
+        gold: responseJson[0].spotPrice,
+      });
+      this.setTableSpotPrices();
+      this.setPortfolioBalance();
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
+  getPlatinumPrice() {
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=platinum&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        isLoading: false,
+        platinum: responseJson[0].spotPrice,
+      });
+      this.setTableSpotPrices();
+      this.setPortfolioBalance();
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
+  getPalladiumPrice() {
+    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=palladium&per_page=1')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({
+        isLoading: false,
+        palladium: responseJson[0].spotPrice,
+      });
+      this.setTableSpotPrices();
+      this.setPortfolioBalance();
+    })
+    .catch((error) =>{
+      console.error(error);
+    });
+  }
+
+  getPortfolioWeightsFromStorage() {
+    AsyncStorage.getItem("silver").then((value) => {
+      this.setState({silver: value});
+    }).done();
+    AsyncStorage.getItem("gold").then((value) => {
+      this.setState({gold: value});
+    }).done();
+    AsyncStorage.getItem("platinum").then((value) => {
+      this.setState({platinum: value});
+    }).done();
+    AsyncStorage.getItem("palladium").then((value) => {
+      this.setState({palladium: value});
+    }).done();
+  }
+
+  setPortfolioBalance() {
+    this.setState({
+      portfolioBalance: '$' + this.formatMoney(this.state.silver * 300) + ' USD',
+      portfolioBalanceLastUpdate: Date.now()
+    });
+  }
+
+  setTableSpotPrices() {
+    this.setState({
+      tableData: [
+        [ this.state.silverWeight + ' oz', '$' + this.formatMoney(this.state.silver), '$' + this.formatMoney(this.state.silver * this.state.silverWeight)],
+        ['', '$' + this.formatMoney(this.state.gold), ''],
+        ['', '$' + this.formatMoney(this.state.platinum), ''],
+        ['', '$' + this.formatMoney(this.state.palladium), '']
+      ]
+    })
+  };
+
+  formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
+    try {
+      decimalCount = Math.abs(decimalCount);
+      decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+  
+      const negativeSign = amount < 0 ? "-" : "";
+  
+      let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+      let j = (i.length > 3) ? i.length % 3 : 0;
+  
+      return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+    } catch (e) {
+      console.log('Money formatting error: ' + e)
+    }
+  };
+
+  componentWillMount() {
+    this.getSilverPrice();
+    this.getGoldPrice();
+    this.getPlatinumPrice();
+    this.getPalladiumPrice();
+  };
+
+  componentDidMount(){
+    this.getPortfolioWeightsFromStorage();
+    this.setPortfolioBalance();
   }
 
   render() {
@@ -28,7 +163,7 @@ export default class HomeScreen extends React.Component {
           <View style={styles.totalContainer}>
             <TouchableOpacity onPress={() => handleTotalPress(this)} style={styles.touchLink}>
               <Text style={styles.totalDollarAmt}>
-                $1,798.50 USD
+                {this.state.portfolioBalance}
               </Text>
               <Text style={styles.totalBanner}>
                 Current Portfolio Balance
@@ -90,6 +225,14 @@ export default class HomeScreen extends React.Component {
               </Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.footerContainer}>
+            <TouchableOpacity onPress={() => handleUpdatePress(this)} style={styles.touchLink}>
+              <Text style={styles.footerLinkText}>
+                Last Update: {this.state.portfolioBalanceLastUpdate}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </View>
     );
@@ -112,6 +255,11 @@ function DevelopmentModeNotice() {
 
 function handleTotalPress(context) {
   context.props.navigation.navigate('Portfolio');
+}
+
+function handleUpdatePress(context) {
+  context.setTableSpotPrices();
+  context.setPortfolioBalance();
 }
 
 function handleSitePress() {
