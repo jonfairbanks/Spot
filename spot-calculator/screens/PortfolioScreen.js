@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Text, View, StyleSheet, AsyncStorage } from 'react-native';
+import { ActivityIndicator, Text, TextInput, View, StyleSheet, AsyncStorage } from 'react-native';
 import { MonoText } from '../components/StyledText';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -10,9 +10,14 @@ export default class PortfolioScreen extends React.Component {
     this.state ={ 
       isLoading: true,
       silver: '',
+      silverWeight: '',
       gold: '',
+      goldWeight: '',
       platinum: '',
-      palladium: ''
+      platinumWeight: '',
+      palladium: '',
+      palladiumWeight: '',
+      text: ''
     }
   }
 
@@ -92,7 +97,7 @@ export default class PortfolioScreen extends React.Component {
     }
   };
 
-  componentDidMount(){
+  componentWillMount(){
     this.getSilverPrice();
     this.getGoldPrice();
     this.getPlatinumPrice();
@@ -121,59 +126,23 @@ export default class PortfolioScreen extends React.Component {
           </MonoText>
         </View>
 
-        <View>
-          <Text style={styles.helpLinkText}>
-          {"\n"}Current Gold Spot Price: 
+        <View style={{ padding: 10 }}>
+          <TextInput
+            style={{ height: 40 }}
+            placeholder="Set silver weight in Oz"
+            onChangeText={input => this.setState({ silverWeight: input }) && AsyncStorage.setItem("silverWeight", this.state.silverWeight)}
+          />
+          <Text style={{ padding: 10, fontSize: 15 }}>
+            Current Silver Weight (oz): {this.state.silverWeight}
           </Text>
-        </View>
-        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>
-            ${this.formatMoney(this.state.gold)} USD/OZ
-          </MonoText>
-        </View>
-
-        <View>
-          <Text style={styles.helpLinkText}>
-          {"\n"}Current Platinum Spot Price: 
-          </Text>
-        </View>
-        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>
-            ${this.formatMoney(this.state.platinum)} USD/OZ
-          </MonoText>
-        </View>
-
-        <View>
-          <Text style={styles.helpLinkText}>
-          {"\n"}Current Palladium Spot Price: 
-          </Text>
-        </View>
-        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>
-            ${this.formatMoney(this.state.palladium)} USD/OZ
-          </MonoText>
-        </View>
-
-        <View>
-          <Text style={styles.helpLinkText}>
-          {"\n"}Current Portfolio Value: 
-          </Text>
-        </View>
-        <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>
-            ${this.formatMoney(this.state.silver + this.state.gold)}
-          </MonoText>
         </View>
 
         <ActionButton buttonColor="rgba(231,76,60,1)">
-          <ActionButton.Item buttonColor='#9b59b6' title="New Task" onPress={() => console.log("notes tapped!")}>
-            <Icon name="md-create" style={styles.actionButtonIcon} />
+          <ActionButton.Item buttonColor='#3498db' title="Create Notifications" onPress={() => {}}>
+            <Icon name="md-notifications" style={styles.actionButtonIcon} />
           </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3498db' title="Notifications" onPress={() => {}}>
-            <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
-          <ActionButton.Item buttonColor='#1abc9c' title="All Tasks" onPress={() => {}}>
-            <Icon name="md-done-all" style={styles.actionButtonIcon} />
+          <ActionButton.Item buttonColor='#1abc9c' title="Add Stock" onPress={() => {}}>
+            <Icon name="logo-usd" style={styles.actionButtonIcon} />
           </ActionButton.Item>
         </ActionButton>
       </View>
