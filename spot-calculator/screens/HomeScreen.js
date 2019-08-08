@@ -16,7 +16,7 @@ export default class HomeScreen extends React.Component {
         ['', '', ''],
         ['', '', '']
       ],
-      portfolioBalance: ''
+      portfolioBalance: null
     }
   }
 
@@ -29,6 +29,7 @@ export default class HomeScreen extends React.Component {
         silver: responseJson[0].spotPrice,
       });
       this.setTableSpotPrices();
+      this.setPortfolioBalance();
     })
     .catch((error) =>{
       console.error(error);
@@ -44,6 +45,7 @@ export default class HomeScreen extends React.Component {
         gold: responseJson[0].spotPrice,
       });
       this.setTableSpotPrices();
+      this.setPortfolioBalance();
     })
     .catch((error) =>{
       console.error(error);
@@ -59,6 +61,7 @@ export default class HomeScreen extends React.Component {
         platinum: responseJson[0].spotPrice,
       });
       this.setTableSpotPrices();
+      this.setPortfolioBalance();
     })
     .catch((error) =>{
       console.error(error);
@@ -74,14 +77,17 @@ export default class HomeScreen extends React.Component {
         palladium: responseJson[0].spotPrice,
       });
       this.setTableSpotPrices();
+      this.setPortfolioBalance();
     })
     .catch((error) =>{
       console.error(error);
     });
   }
 
-  getPortfolioBalance() {
-    
+  setPortfolioBalance() {
+    this.setState({
+      portfolioBalance: '$' + this.formatMoney(this.state.silver * 300) + ' USD'
+    });
   }
 
   setTableSpotPrices() {
@@ -111,11 +117,12 @@ export default class HomeScreen extends React.Component {
     }
   };
 
-  componentDidMount(){
+  componentWillMount(){
     this.getSilverPrice();
     this.getGoldPrice();
     this.getPlatinumPrice();
     this.getPalladiumPrice();
+    this.setPortfolioBalance();
   }
 
   render() {
@@ -127,7 +134,7 @@ export default class HomeScreen extends React.Component {
           <View style={styles.totalContainer}>
             <TouchableOpacity onPress={() => handleTotalPress(this)} style={styles.touchLink}>
               <Text style={styles.totalDollarAmt}>
-                $1,798.50 USD
+                {this.state.portfolioBalance}
               </Text>
               <Text style={styles.totalBanner}>
                 Current Portfolio Balance
