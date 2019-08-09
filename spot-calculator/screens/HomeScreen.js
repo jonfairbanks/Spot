@@ -92,7 +92,7 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <DevelopmentModeNotice />
+          {/*<DevelopmentModeNotice />*/}
           <View style={styles.totalContainer}>
             <TouchableOpacity onPress={() => handleTotalPress(this)} style={styles.touchLink}>
               <Text style={styles.totalDollarAmt}>
@@ -120,8 +120,8 @@ export default class HomeScreen extends React.Component {
                   ]
                 }]
               }}
-              width={Dimensions.get('window').width} // from react-native
-              height={220}
+              width={Dimensions.get('window').width - 10} // from react-native
+              height={Dimensions.get('window').height * .40}
               yAxisLabel={'$'}
               chartConfig={{
                 backgroundColor: '#e26a00',
@@ -130,13 +130,12 @@ export default class HomeScreen extends React.Component {
                 decimalPlaces: 2, // optional, defaults to 2dp
                 color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                 style: {
-                  borderRadius: 16
+                  borderRadius: 10
                 }
               }}
               bezier
               style={{
-                marginVertical: 8,
-                borderRadius: 16
+                borderRadius: 10
               }}
             />
           </View>
@@ -236,7 +235,7 @@ const styles = StyleSheet.create({
   tableContainer: { 
     flex: 1, 
     padding: 16, 
-    paddingTop: 30, 
+    paddingTop: 5, 
     backgroundColor: '#fff' 
   },
   head: {  
