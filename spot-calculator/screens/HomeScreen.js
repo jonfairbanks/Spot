@@ -3,6 +3,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, AsyncStorage } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
+const SpotAPI = require ('../controllers/spot');
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
@@ -29,77 +30,14 @@ export default class HomeScreen extends React.Component {
     }
   }
 
-  getSilverPrice() {
-    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=silver&per_page=1')
-    .then((response) => response.json())
-    .then((responseJson) => {
-      this.setState({
-        isLoading: false,
-        silver: responseJson[0].spotPrice,
-      });
-      this.setTableSpotPrices();
-      this.setPortfolioBalance();
-    })
-    .catch((error) =>{
-      console.error(error);
-    });
-  }
-
-  getGoldPrice() {
-    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=gold&per_page=1')
-    .then((response) => response.json())
-    .then((responseJson) => {
-      this.setState({
-        isLoading: false,
-        gold: responseJson[0].spotPrice,
-      });
-      this.setTableSpotPrices();
-      this.setPortfolioBalance();
-    })
-    .catch((error) =>{
-      console.error(error);
-    });
-  }
-
-  getPlatinumPrice() {
-    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=platinum&per_page=1')
-    .then((response) => response.json())
-    .then((responseJson) => {
-      this.setState({
-        isLoading: false,
-        platinum: responseJson[0].spotPrice,
-      });
-      this.setTableSpotPrices();
-      this.setPortfolioBalance();
-    })
-    .catch((error) =>{
-      console.error(error);
-    });
-  }
-
-  getPalladiumPrice() {
-    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=palladium&per_page=1')
-    .then((response) => response.json())
-    .then((responseJson) => {
-      this.setState({
-        isLoading: false,
-        palladium: responseJson[0].spotPrice,
-      });
-      this.setTableSpotPrices();
-      this.setPortfolioBalance();
-    })
-    .catch((error) =>{
-      console.error(error);
-    });
-  }
-
   getLatestPrices() {
-    this.getSilverPrice();
-    this.getGoldPrice();
-    this.getPlatinumPrice();
-    this.getPalladiumPrice();
-    this.setTableSpotPrices();
-    this.setPortfolioBalance();
+    SpotAPI.getPrices()
+      .then(response => {
+        const prices = response.prices
+        this.setState({silver: prices.silver, gold: prices.gold, platinum: prices.platinum, palladium: prices.palladium})
+        this.setTableSpotPrices();
+        this.setPortfolioBalance();
+      });
   }
 
   getPortfolioWeightsFromStorage() {
@@ -153,11 +91,14 @@ export default class HomeScreen extends React.Component {
 
   componentWillMount() {
     this.getLatestPrices();
-    this.getPortfolioWeightsFromStorage();
+    //this.getPortfolioWeightsFromStorage();
+    
   };
 
   componentDidMount(){
-    setTimeout(() => { this.getLatestPrices(); }, 3000);
+    //setTimeout(() => { this.getLatestPrices(); }, 3000);
+    
+    
   }
 
   render() {
