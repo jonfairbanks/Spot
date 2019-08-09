@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Text, TextInput, View, StyleSheet, AsyncStorage } from 'react-native';
+import { ActivityIndicator, Text, TextInput, View, StyleSheet, AsyncStorage, Button } from 'react-native';
 import { MonoText } from '../components/StyledText';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -39,6 +39,11 @@ export default class PortfolioScreen extends React.Component {
     AsyncStorage.getItem("palladiumWeight").then((value) => {
       this.setState({palladiumWeight: value});
     }).done();
+  }
+
+  clearAsyncStorage = async() => {
+    AsyncStorage.clear();
+    this.getPortfolioWeightsFromStorage();
   }
 
   componentWillMount(){
@@ -89,7 +94,7 @@ export default class PortfolioScreen extends React.Component {
           <TextInput
             style={{ height: 40 }}
             placeholder="Set Silver weight in OZ"
-            onChangeText={input => AsyncStorage.setItem("silverWeight", input)}
+            onChangeText={input => AsyncStorage.setItem("silverWeight", input) && this.setState({silverWeight: input})}
           />
           <Text style={{ padding: 1, fontSize: 15 }}>
             Current Gold Weight: {this.state.goldWeight ? this.state.goldWeight + ' OZ' : '-'}
@@ -97,7 +102,7 @@ export default class PortfolioScreen extends React.Component {
           <TextInput
             style={{ height: 40 }}
             placeholder="Set Gold weight in OZ"
-            onChangeText={input => AsyncStorage.setItem("goldWeight", input)}
+            onChangeText={input => AsyncStorage.setItem("goldWeight", input) && this.setState({goldWeight: input})}
           />
           <Text style={{ padding: 1, fontSize: 15 }}>
             Current Platinum Weight: {this.state.platinumWeight ? this.state.platinumWeight + ' OZ' : '-'}
@@ -105,7 +110,7 @@ export default class PortfolioScreen extends React.Component {
           <TextInput
             style={{ height: 40 }}
             placeholder="Set Platinum weight in OZ"
-            onChangeText={input => AsyncStorage.setItem("platinumWeight", input)}
+            onChangeText={input => AsyncStorage.setItem("platinumWeight", input) && this.setState({platinumWeight: input})}
           />
           <Text style={{ padding: 1, fontSize: 15 }}>
             Current Palladium Weight: {this.state.palladiumWeight ? this.state.palladiumWeight + ' OZ' : '-'}
@@ -113,9 +118,15 @@ export default class PortfolioScreen extends React.Component {
           <TextInput
             style={{ height: 40 }}
             placeholder="Set Palladium weight in OZ"
-            onChangeText={input => AsyncStorage.setItem("palladiumWeight", input)}
+            onChangeText={input => AsyncStorage.setItem("palladiumWeight", input) && this.setState({palladiumWeight: input})}
           />
         </View>
+
+        <Button
+          color="#841584"
+          onPress={() => this.clearAsyncStorage()}
+          title="Clear Async Storage"
+        />
 
         <ActionButton buttonColor="rgba(231,76,60,1)">
           <ActionButton.Item buttonColor='#3498db' title="Create Notifications" onPress={() => {}}>
