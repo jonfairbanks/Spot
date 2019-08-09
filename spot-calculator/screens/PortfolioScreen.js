@@ -23,13 +23,14 @@ export default class PortfolioScreen extends React.Component {
 
   getSilverPrice() {
     var _this = this;
-    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=silver&per_page=1')
+    return fetch('https://spot.bsord.io/api/v1/spots/latest')
     .then((response) => response.json())
     .then((responseJson) => {
       _this.setState({
         isLoading: false,
-        silver: responseJson[0].spotPrice,
+        silver: responseJson[0].silver,
       });
+      console.log(responseJson)
     })
     .catch((error) =>{
       console.error(error);
@@ -38,12 +39,12 @@ export default class PortfolioScreen extends React.Component {
 
   getGoldPrice() {
     var _this = this;
-    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=gold&per_page=1')
+    return fetch('https://spot.bsord.io/api/v1/spots/?metal=gold&per_page=1')
     .then((response) => response.json())
     .then((responseJson) => {
       _this.setState({
         isLoading: false,
-        gold: responseJson[0].spotPrice,
+        gold: responseJson[0].gold,
       });
     })
     .catch((error) =>{
@@ -53,12 +54,12 @@ export default class PortfolioScreen extends React.Component {
 
   getPlatinumPrice() {
     var _this = this;
-    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=platinum&per_page=1')
+    return fetch('https://spot.bsord.io/api/v1/spots/?metal=platinum&per_page=1')
     .then((response) => response.json())
     .then((responseJson) => {
       _this.setState({
         isLoading: false,
-        platinum: responseJson[0].spotPrice,
+        platinum: responseJson[0].platinum,
       });
     })
     .catch((error) =>{
@@ -73,8 +74,9 @@ export default class PortfolioScreen extends React.Component {
     .then((responseJson) => {
       _this.setState({
         isLoading: false,
-        palladium: responseJson[0].spotPrice,
+        palladium: responseJson[0].palladium,
       });
+      
     })
     .catch((error) =>{
       console.error(error);
