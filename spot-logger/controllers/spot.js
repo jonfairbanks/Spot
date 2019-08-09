@@ -11,14 +11,21 @@ exports.get = (req, res) => {
 exports.getLatest = (req, res) => {
     Spot.aggregate([
         {$match: {}},
-        {$group: {_id: '$metal',spotPrice: { $last: "$spotPrice" }}}
+        {$group: {
+          _id: '$metal',
+          spotPrice: { $last: "$spotPrice" }
+        }}
     ]).then(spots => {
+      
       spotPrices = spots.map(spot => {
         return {
           [spot._id]: spot.spotPrice
         }
-      })
-      res.json(spotPrices)
+      }).reduce(function(result, current) {
+        return Object.assign(result, current);
+      }, {})
+      responseData = {prices: spotPrices, timestamp: Date.now()}
+      res.json(responseData)
     })
-    .catch(err => { res.status(422).send(err.errors) })
+    .catch(err => { console.log(err); res.status(422).send(err.errors) })
 };
