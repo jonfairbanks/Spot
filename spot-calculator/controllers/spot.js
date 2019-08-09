@@ -1,3 +1,4 @@
+import { AsyncStorage } from 'react-native';
 import {SPOT_API} from 'react-native-dotenv';
 
 export const getPrices = () => {
@@ -22,4 +23,26 @@ export const formatMoney = (amount, decimalCount = 2, decimal = ".", thousands =
   } catch (e) {
     console.log('Formatting error: ' + e)
   }
-};
+}
+
+export const getPortfolioWeightsFromStorage = () => {
+  AsyncStorage.getItem("silverWeight").then((value) => {
+    console.log("s: " + value)
+    this.setState({silverWeight: value});
+  }).done();
+
+  AsyncStorage.getItem("goldWeight").then((value) => {
+    console.log("g: " + value)
+    this.setState({goldWeight: value});
+  }).done();
+
+  AsyncStorage.getItem("platinumWeight").then((value) => {
+    console.log("pl: " + value)
+    this.setState({platinumWeight: value});
+  }).done();
+
+  AsyncStorage.getItem("palladiumWeight").then((value) => {
+    console.log("pa: " + value)
+    this.setState({palladiumWeight: value});
+  }).done();
+}

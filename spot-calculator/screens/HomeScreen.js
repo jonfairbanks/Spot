@@ -1,9 +1,10 @@
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, AsyncStorage } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, RefreshControl, AsyncStorage } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
 import moment from 'moment';
+import { withNavigationFocus } from "react-navigation";
 
 const SpotAPI = require ('../controllers/spot');
 
@@ -11,6 +12,7 @@ export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      refreshing: false,
       tableHead: ['', 'Total Weight', 'Spot Price', 'Total Holdings'],
       tableTitle: ['Silver', 'Gold', 'Platinum', 'Palladium'],
       tableData: [
@@ -43,23 +45,26 @@ export default class HomeScreen extends React.Component {
   }
 
   getPortfolioWeightsFromStorage() {
-    AsyncStorage.getItem("silver").then((value) => {
-      this.setState({silver: value});
+    AsyncStorage.getItem("silverWeight").then((value) => {
+      this.setState({silverWeight: value});
     }).done();
-    AsyncStorage.getItem("gold").then((value) => {
-      this.setState({gold: value});
+
+    AsyncStorage.getItem("goldWeight").then((value) => {
+      this.setState({goldWeight: value});
     }).done();
-    AsyncStorage.getItem("platinum").then((value) => {
-      this.setState({platinum: value});
+
+    AsyncStorage.getItem("platinumWeight").then((value) => {
+      this.setState({platinumWeight: value});
     }).done();
-    AsyncStorage.getItem("palladium").then((value) => {
-      this.setState({palladium: value});
+
+    AsyncStorage.getItem("palladiumWeight").then((value) => {
+      this.setState({palladiumWeight: value});
     }).done();
   }
 
   setPortfolioBalance() {
     this.setState({
-      portfolioBalance: '$' + SpotAPI.formatMoney(this.state.silver * 300) + ' USD',
+      portfolioBalance: '$' + SpotAPI.formatMoney(this.state.silver * this.state.silverWeight) + ' USD',
       portfolioBalanceLastUpdate: moment().format('MMM Do, h:mm:ss a')
     });
   }
@@ -75,23 +80,40 @@ export default class HomeScreen extends React.Component {
     })
   };
 
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    this.getPortfolioWeightsFromStorage();
+    this.getLatestPrices();
+    this.setState({refreshing: false});
+  }
+
   componentWillMount() {
     this.getLatestPrices();
-    //this.getPortfolioWeightsFromStorage();
-    
+    this.getPortfolioWeightsFromStorage();
   };
 
-  componentDidMount(){
-    //setTimeout(() => { this.getLatestPrices(); }, 3000);
-    
-    
+  componentDidUpdate(prevProps) {
+    if (prevProps.isFocused !== this.props.isFocused) {
+      // Use the `this.props.isFocused` boolean
+      // Call any action
+      this._onRefresh();
+    }
   }
 
   render() {
     const state = this.state;
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <ScrollView 
+          style={styles.container} 
+          contentContainerStyle={styles.contentContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
+        >
           {/*<DevelopmentModeNotice />*/}
           <View style={styles.totalContainer}>
             <TouchableOpacity onPress={() => handleTotalPress(this)} style={styles.touchLink}>
