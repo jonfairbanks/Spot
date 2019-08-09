@@ -4,6 +4,8 @@ import { MonoText } from '../components/StyledText';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+const SpotAPI = require ('../controllers/spot');
+
 export default class PortfolioScreen extends React.Component {
   constructor(props){
     super(props);
@@ -21,89 +23,18 @@ export default class PortfolioScreen extends React.Component {
     }
   }
 
-  getSilverPrice() {
-    var _this = this;
-    return fetch('https://spot.bsord.io/api/v1/spots/latest')
-    .then((response) => response.json())
-    .then((responseJson) => {
-      _this.setState({
-        isLoading: false,
-        silver: responseJson[0].silver,
-      });
-      console.log(responseJson)
-    })
-    .catch((error) =>{
-      console.error(error);
-    });
-  }
-
-  getGoldPrice() {
-    var _this = this;
-    return fetch('https://spot.bsord.io/api/v1/spots/?metal=gold&per_page=1')
-    .then((response) => response.json())
-    .then((responseJson) => {
-      _this.setState({
-        isLoading: false,
-        gold: responseJson[0].gold,
-      });
-    })
-    .catch((error) =>{
-      console.error(error);
-    });
-  }
-
-  getPlatinumPrice() {
-    var _this = this;
-    return fetch('https://spot.bsord.io/api/v1/spots/?metal=platinum&per_page=1')
-    .then((response) => response.json())
-    .then((responseJson) => {
-      _this.setState({
-        isLoading: false,
-        platinum: responseJson[0].platinum,
-      });
-    })
-    .catch((error) =>{
-      console.error(error);
-    });
-  }
-
-  getPalladiumPrice() {
-    var _this = this;
-    return fetch('http://fairbanks.io:7001/api/v1/spots/?metal=palladium&per_page=1')
-    .then((response) => response.json())
-    .then((responseJson) => {
-      _this.setState({
-        isLoading: false,
-        palladium: responseJson[0].palladium,
-      });
-      
-    })
-    .catch((error) =>{
-      console.error(error);
-    });
-  }
-
-  formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
-    try {
-      decimalCount = Math.abs(decimalCount);
-      decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
-  
-      const negativeSign = amount < 0 ? "-" : "";
-  
-      let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
-      let j = (i.length > 3) ? i.length % 3 : 0;
-  
-      return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
-    } catch (e) {
-      console.log('Formatting error: ' + e)
-    }
-  };
-
   componentWillMount(){
-    this.getSilverPrice();
-    this.getGoldPrice();
-    this.getPlatinumPrice();
-    this.getPalladiumPrice();
+    SpotAPI.getPrices()
+    .then(response => {
+      const prices = response.prices
+      this.setState({
+        isLoading: false, 
+        silver: prices.silver, 
+        gold: prices.gold, 
+        platinum: prices.platinum, 
+        palladium: prices.palladium
+      })
+    });
   }
 
   render(){
@@ -124,7 +55,7 @@ export default class PortfolioScreen extends React.Component {
         </View>
         <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
           <MonoText style={styles.codeHighlightText}>
-            ${this.formatMoney(this.state.silver)} USD/OZ
+            ${SpotAPI.formatMoney(this.state.silver)} USD/OZ
           </MonoText>
         </View>
 

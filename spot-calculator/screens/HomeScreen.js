@@ -3,6 +3,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, AsyncStorage } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
+
 const SpotAPI = require ('../controllers/spot');
 
 export default class HomeScreen extends React.Component {
@@ -32,12 +33,12 @@ export default class HomeScreen extends React.Component {
 
   getLatestPrices() {
     SpotAPI.getPrices()
-      .then(response => {
-        const prices = response.prices
-        this.setState({silver: prices.silver, gold: prices.gold, platinum: prices.platinum, palladium: prices.palladium})
-        this.setTableSpotPrices();
-        this.setPortfolioBalance();
-      });
+    .then(response => {
+      const prices = response.prices
+      this.setState({silver: prices.silver, gold: prices.gold, platinum: prices.platinum, palladium: prices.palladium})
+      this.setTableSpotPrices();
+      this.setPortfolioBalance();
+    });
   }
 
   getPortfolioWeightsFromStorage() {
@@ -57,7 +58,7 @@ export default class HomeScreen extends React.Component {
 
   setPortfolioBalance() {
     this.setState({
-      portfolioBalance: '$' + this.formatMoney(this.state.silver * 300) + ' USD',
+      portfolioBalance: '$' + SpotAPI.formatMoney(this.state.silver * 300) + ' USD',
       portfolioBalanceLastUpdate: Date.now()
     });
   }
@@ -65,28 +66,12 @@ export default class HomeScreen extends React.Component {
   setTableSpotPrices() {
     this.setState({
       tableData: [
-        [ this.state.silverWeight + ' oz', '$' + this.formatMoney(this.state.silver), '$' + this.formatMoney(this.state.silver * this.state.silverWeight)],
-        ['', '$' + this.formatMoney(this.state.gold), ''],
-        ['', '$' + this.formatMoney(this.state.platinum), ''],
-        ['', '$' + this.formatMoney(this.state.palladium), '']
+        [ this.state.silverWeight + ' oz', '$' + SpotAPI.formatMoney(this.state.silver), '$' + SpotAPI.formatMoney(this.state.silver * this.state.silverWeight)],
+        ['', '$' + SpotAPI.formatMoney(this.state.gold), ''],
+        ['', '$' + SpotAPI.formatMoney(this.state.platinum), ''],
+        ['', '$' + SpotAPI.formatMoney(this.state.palladium), '']
       ]
     })
-  };
-
-  formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
-    try {
-      decimalCount = Math.abs(decimalCount);
-      decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
-  
-      const negativeSign = amount < 0 ? "-" : "";
-  
-      let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
-      let j = (i.length > 3) ? i.length % 3 : 0;
-  
-      return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
-    } catch (e) {
-      console.log('Money formatting error: ' + e)
-    }
   };
 
   componentWillMount() {
