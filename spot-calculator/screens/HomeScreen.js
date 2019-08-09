@@ -3,6 +3,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, AsyncStorage } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
+import moment from 'moment';
 
 const SpotAPI = require ('../controllers/spot');
 
@@ -59,7 +60,7 @@ export default class HomeScreen extends React.Component {
   setPortfolioBalance() {
     this.setState({
       portfolioBalance: '$' + SpotAPI.formatMoney(this.state.silver * 300) + ' USD',
-      portfolioBalanceLastUpdate: Date.now()
+      portfolioBalanceLastUpdate: moment().format('MMM Do, h:mm:ss a')
     });
   }
 
