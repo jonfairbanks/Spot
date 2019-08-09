@@ -72,11 +72,10 @@ export default class HomeScreen extends React.Component {
   setTableSpotPrices() {
     this.setState({
       tableData: [
-        [ this.state.silverWeight + ' oz', '$' + SpotAPI.formatMoney(this.state.silver), '$' + SpotAPI.formatMoney(this.state.silver * this.state.silverWeight)],
-        ['', '$' + SpotAPI.formatMoney(this.state.gold), ''],
-        ['', '$' + SpotAPI.formatMoney(this.state.platinum), ''],
-        ['', '$' + SpotAPI.formatMoney(this.state.palladium), '']
-      ]
+        [this.state.silverWeight + ' oz', '$' + SpotAPI.formatMoney(this.state.silver), '$' + SpotAPI.formatMoney(this.state.silver * this.state.silverWeight)],
+        [this.state.goldWeight + ' oz', '$' + SpotAPI.formatMoney(this.state.gold), '$' + SpotAPI.formatMoney(this.state.gold * this.state.goldWeight)],
+        [this.state.platinumWeight + ' oz', '$' + SpotAPI.formatMoney(this.state.platinum), '$' + SpotAPI.formatMoney(this.state.platinum * this.state.platinumWeight)],
+        [this.state.palladiumWeight + ' oz', '$' + SpotAPI.formatMoney(this.state.palladium), '$' + SpotAPI.formatMoney(this.state.palladium * this.state.palladiumWeight)],      ]
     })
   };
 
