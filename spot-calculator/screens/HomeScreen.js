@@ -93,6 +93,15 @@ export default class HomeScreen extends React.Component {
     });
   }
 
+  getLatestPrices() {
+    this.getSilverPrice();
+    this.getGoldPrice();
+    this.getPlatinumPrice();
+    this.getPalladiumPrice();
+    this.setTableSpotPrices();
+    this.setPortfolioBalance();
+  }
+
   getPortfolioWeightsFromStorage() {
     AsyncStorage.getItem("silver").then((value) => {
       this.setState({silver: value});
@@ -143,15 +152,12 @@ export default class HomeScreen extends React.Component {
   };
 
   componentWillMount() {
-    this.getSilverPrice();
-    this.getGoldPrice();
-    this.getPlatinumPrice();
-    this.getPalladiumPrice();
+    this.getLatestPrices();
+    this.getPortfolioWeightsFromStorage();
   };
 
   componentDidMount(){
-    this.getPortfolioWeightsFromStorage();
-    this.setPortfolioBalance();
+    setTimeout(() => { this.getLatestPrices(); }, 3000);
   }
 
   render() {
@@ -258,8 +264,7 @@ function handleTotalPress(context) {
 }
 
 function handleUpdatePress(context) {
-  context.setTableSpotPrices();
-  context.setPortfolioBalance();
+  context.getLatestPrices();
 }
 
 function handleSitePress() {
