@@ -1,4 +1,3 @@
-import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, RefreshControl, AsyncStorage } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
@@ -171,19 +170,9 @@ export default class HomeScreen extends React.Component {
           </View>
 
           <View style={styles.footerContainer}>
-            <TouchableOpacity onPress={handleSitePress} style={styles.touchLink}>
-              <Text style={styles.footerLinkText}>
-                Spot
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.footerContainer}>
-            <TouchableOpacity onPress={() => handleUpdatePress(this)} style={styles.touchLink}>
-              <Text style={styles.footerLinkText}>
-                Last Update: {this.state.portfolioBalanceLastUpdate}
-              </Text>
-            </TouchableOpacity>
+            <Text style={styles.footerLinkText}>
+              Last Update: {this.state.portfolioBalanceLastUpdate}
+            </Text>
           </View>
         </ScrollView>
       </View>
@@ -281,9 +270,6 @@ const styles = StyleSheet.create({
   },
   footerLinkText: {
     fontSize: 14,
-    color: '#2e78b7',
-  },
-  touchLink: {
-    paddingVertical: 5,
+    color: 'grey',
   },
 });

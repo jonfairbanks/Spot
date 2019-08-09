@@ -1,8 +1,9 @@
 import React from 'react';
-import { ActivityIndicator, Text, TextInput, ScrollView, View, StyleSheet, AsyncStorage, Button, RefreshControl } from 'react-native';
+import { ActivityIndicator, Text, TextInput, ScrollView, View, TouchableOpacity, StyleSheet, AsyncStorage, Button, RefreshControl } from 'react-native';
 import { MonoText } from '../components/StyledText';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
+import * as WebBrowser from 'expo-web-browser';
 
 const SpotAPI = require ('../controllers/spot');
 
@@ -147,6 +148,15 @@ export default class PortfolioScreen extends React.Component {
             onPress={() => this.clearAsyncStorage()}
             title="Reset My Portfolio"
           />
+
+          
+          <View style={styles.footerContainer}>
+            <TouchableOpacity onPress={handleSitePress} style={styles.touchLink}>
+              <Text style={styles.footerLinkText}>
+                Spot
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
         <ActionButton buttonColor="rgba(231,76,60,1)">
             <ActionButton.Item buttonColor='#3498db' title="Create Notifications" onPress={() => {}}>
@@ -165,6 +175,12 @@ export default class PortfolioScreen extends React.Component {
 PortfolioScreen.navigationOptions = {
   title: 'Portfolio',
 };
+
+function handleSitePress() {
+  WebBrowser.openBrowserAsync(
+    'https://github.com/Fairbanks-io/Spot'
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -187,5 +203,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     height: 22,
     color: 'white',
+  },
+  footerContainer: {
+    marginTop: 5,
+    alignItems: 'center',
+  },
+  footerLinkText: {
+    fontSize: 14,
+    color: '#2e78b7',
+  },
+  touchLink: {
+    paddingVertical: 15,
   },
 });
