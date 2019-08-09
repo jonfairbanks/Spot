@@ -63,8 +63,13 @@ export default class HomeScreen extends React.Component {
   }
 
   setPortfolioBalance() {
+    let silverTot = this.state.silver * this.state.silverWeight;
+    let goldTot = this.state.gold * this.state.goldWeight;
+    let platinumTot = this.state.platinum * this.state.platinumWeight;
+    let palladiumTot = this.state.palladium * this.state.palladiumWeight;
+    let total = silverTot + goldTot + platinumTot + palladiumTot;
     this.setState({
-      portfolioBalance: '$' + SpotAPI.formatMoney(this.state.silver * this.state.silverWeight) + ' USD',
+      portfolioBalance: '$' + SpotAPI.formatMoney(total) + ' USD',
       portfolioBalanceLastUpdate: moment().format('MMM Do, h:mm:ss a')
     });
   }
@@ -72,10 +77,10 @@ export default class HomeScreen extends React.Component {
   setTableSpotPrices() {
     this.setState({
       tableData: [
-        [this.state.silverWeight + ' oz', '$' + SpotAPI.formatMoney(this.state.silver), '$' + SpotAPI.formatMoney(this.state.silver * this.state.silverWeight)],
-        [this.state.goldWeight + ' oz', '$' + SpotAPI.formatMoney(this.state.gold), '$' + SpotAPI.formatMoney(this.state.gold * this.state.goldWeight)],
-        [this.state.platinumWeight + ' oz', '$' + SpotAPI.formatMoney(this.state.platinum), '$' + SpotAPI.formatMoney(this.state.platinum * this.state.platinumWeight)],
-        [this.state.palladiumWeight + ' oz', '$' + SpotAPI.formatMoney(this.state.palladium), '$' + SpotAPI.formatMoney(this.state.palladium * this.state.palladiumWeight)],      ]
+        [this.state.silverWeight ? this.state.silverWeight + ' oz' : '-', '$' + SpotAPI.formatMoney(this.state.silver), '$' + SpotAPI.formatMoney(this.state.silver * this.state.silverWeight)],
+        [this.state.goldWeight ? this.state.goldWeight + ' oz' : '-', '$' + SpotAPI.formatMoney(this.state.gold), '$' + SpotAPI.formatMoney(this.state.gold * this.state.goldWeight)],
+        [this.state.platinumWeight ? this.state.platinumWeight + ' oz' : '-', '$' + SpotAPI.formatMoney(this.state.platinum), '$' + SpotAPI.formatMoney(this.state.platinum * this.state.platinumWeight)],
+        [this.state.palladiumWeight ? this.state.palladiumWeight + ' oz' : '-', '$' + SpotAPI.formatMoney(this.state.palladium), '$' + SpotAPI.formatMoney(this.state.palladium * this.state.palladiumWeight)],      ]
     })
   };
 
