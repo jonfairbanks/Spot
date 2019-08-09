@@ -4,13 +4,15 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, Refre
 import { LineChart } from 'react-native-chart-kit';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
 import moment from 'moment';
-import { withNavigationFocus } from "react-navigation";
 
 const SpotAPI = require ('../controllers/spot');
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
+    this._willFocusSubscription = props.navigation.addListener('willFocus', payload =>
+      this._onRefresh()
+    );
     this.state = {
       refreshing: false,
       tableHead: ['', 'Total Weight', 'Spot Price', 'Total Holdings'],
@@ -95,14 +97,6 @@ export default class HomeScreen extends React.Component {
     this.getLatestPrices();
     this.getPortfolioWeightsFromStorage();
   };
-
-  componentDidUpdate(prevProps) {
-    if (prevProps.isFocused !== this.props.isFocused) {
-      // Use the `this.props.isFocused` boolean
-      // Call any action
-      this._onRefresh();
-    }
-  }
 
   render() {
     const state = this.state;
