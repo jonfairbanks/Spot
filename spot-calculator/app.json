@@ -4,6 +4,13 @@
     "slug": "spot-calculator",
     "privacy": "public",
     "sdkVersion": "34.0.0",
+    "ios": {
+      "bundleIdentifier": "io.fairbanks.spot",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "io.fairbanks.spot"
+    },
     "platforms": [
       "ios",
       "android",
@@ -22,9 +29,6 @@
     },
     "assetBundlePatterns": [
       "**/*"
-    ],
-    "ios": {
-      "supportsTablet": false
-    }
+    ]
   }
 }

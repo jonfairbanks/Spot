@@ -1,14 +1,19 @@
-import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, AsyncStorage } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, RefreshControl, AsyncStorage } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
+import moment from 'moment';
+
 const SpotAPI = require ('../controllers/spot');
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
+    this._willFocusSubscription = props.navigation.addListener('willFocus', payload =>
+      this._onRefresh()
+    );
     this.state = {
+      refreshing: false,
       tableHead: ['', 'Total Weight', 'Spot Price', 'Total Holdings'],
       tableTitle: ['Silver', 'Gold', 'Platinum', 'Palladium'],
       tableData: [
@@ -32,81 +37,81 @@ export default class HomeScreen extends React.Component {
 
   getLatestPrices() {
     SpotAPI.getPrices()
-      .then(response => {
-        const prices = response.prices
-        this.setState({silver: prices.silver, gold: prices.gold, platinum: prices.platinum, palladium: prices.palladium})
-        this.setTableSpotPrices();
-        this.setPortfolioBalance();
-      });
+    .then(response => {
+      const prices = response.prices
+      this.setState({silver: prices.silver, gold: prices.gold, platinum: prices.platinum, palladium: prices.palladium})
+      this.setTableSpotPrices();
+      this.setPortfolioBalance();
+    });
   }
 
   getPortfolioWeightsFromStorage() {
-    AsyncStorage.getItem("silver").then((value) => {
-      this.setState({silver: value});
+    AsyncStorage.getItem("silverWeight").then((value) => {
+      this.setState({silverWeight: value});
     }).done();
-    AsyncStorage.getItem("gold").then((value) => {
-      this.setState({gold: value});
+
+    AsyncStorage.getItem("goldWeight").then((value) => {
+      this.setState({goldWeight: value});
     }).done();
-    AsyncStorage.getItem("platinum").then((value) => {
-      this.setState({platinum: value});
+
+    AsyncStorage.getItem("platinumWeight").then((value) => {
+      this.setState({platinumWeight: value});
     }).done();
-    AsyncStorage.getItem("palladium").then((value) => {
-      this.setState({palladium: value});
+
+    AsyncStorage.getItem("palladiumWeight").then((value) => {
+      this.setState({palladiumWeight: value});
     }).done();
   }
 
   setPortfolioBalance() {
+    let silverTot = this.state.silver * this.state.silverWeight;
+    let goldTot = this.state.gold * this.state.goldWeight;
+    let platinumTot = this.state.platinum * this.state.platinumWeight;
+    let palladiumTot = this.state.palladium * this.state.palladiumWeight;
+    let total = silverTot + goldTot + platinumTot + palladiumTot;
     this.setState({
-      portfolioBalance: '$' + this.formatMoney(this.state.silver * 300) + ' USD',
-      portfolioBalanceLastUpdate: Date.now()
+      portfolioBalance: '$' + SpotAPI.formatMoney(total) + ' USD',
+      portfolioBalanceLastUpdate: moment().format('MMM Do, h:mm:ss a')
     });
   }
 
   setTableSpotPrices() {
     this.setState({
       tableData: [
-        [ this.state.silverWeight + ' oz', '$' + this.formatMoney(this.state.silver), '$' + this.formatMoney(this.state.silver * this.state.silverWeight)],
-        ['', '$' + this.formatMoney(this.state.gold), ''],
-        ['', '$' + this.formatMoney(this.state.platinum), ''],
-        ['', '$' + this.formatMoney(this.state.palladium), '']
-      ]
+        [this.state.silverWeight ? this.state.silverWeight + ' oz' : '-', '$' + SpotAPI.formatMoney(this.state.silver), '$' + SpotAPI.formatMoney(this.state.silver * this.state.silverWeight)],
+        [this.state.goldWeight ? this.state.goldWeight + ' oz' : '-', '$' + SpotAPI.formatMoney(this.state.gold), '$' + SpotAPI.formatMoney(this.state.gold * this.state.goldWeight)],
+        [this.state.platinumWeight ? this.state.platinumWeight + ' oz' : '-', '$' + SpotAPI.formatMoney(this.state.platinum), '$' + SpotAPI.formatMoney(this.state.platinum * this.state.platinumWeight)],
+        [this.state.palladiumWeight ? this.state.palladiumWeight + ' oz' : '-', '$' + SpotAPI.formatMoney(this.state.palladium), '$' + SpotAPI.formatMoney(this.state.palladium * this.state.palladiumWeight)],      ]
     })
   };
 
-  formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
-    try {
-      decimalCount = Math.abs(decimalCount);
-      decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
-  
-      const negativeSign = amount < 0 ? "-" : "";
-  
-      let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
-      let j = (i.length > 3) ? i.length % 3 : 0;
-  
-      return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
-    } catch (e) {
-      console.log('Money formatting error: ' + e)
-    }
-  };
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    this.getPortfolioWeightsFromStorage();
+    this.getLatestPrices();
+    this.setState({refreshing: false});
+  }
 
   componentWillMount() {
     this.getLatestPrices();
-    //this.getPortfolioWeightsFromStorage();
-    
+    this.getPortfolioWeightsFromStorage();
   };
-
-  componentDidMount(){
-    //setTimeout(() => { this.getLatestPrices(); }, 3000);
-    
-    
-  }
 
   render() {
     const state = this.state;
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <DevelopmentModeNotice />
+        <ScrollView 
+          style={styles.container} 
+          contentContainerStyle={styles.contentContainer}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
+        >
+          {/*<DevelopmentModeNotice />*/}
           <View style={styles.totalContainer}>
             <TouchableOpacity onPress={() => handleTotalPress(this)} style={styles.touchLink}>
               <Text style={styles.totalDollarAmt}>
@@ -134,8 +139,8 @@ export default class HomeScreen extends React.Component {
                   ]
                 }]
               }}
-              width={Dimensions.get('window').width} // from react-native
-              height={220}
+              width={Dimensions.get('window').width - 10} // from react-native
+              height={Dimensions.get('window').height * .40}
               yAxisLabel={'$'}
               chartConfig={{
                 backgroundColor: '#e26a00',
@@ -144,13 +149,12 @@ export default class HomeScreen extends React.Component {
                 decimalPlaces: 2, // optional, defaults to 2dp
                 color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                 style: {
-                  borderRadius: 16
+                  borderRadius: 10
                 }
               }}
               bezier
               style={{
-                marginVertical: 8,
-                borderRadius: 16
+                borderRadius: 10
               }}
             />
           </View>
@@ -166,19 +170,9 @@ export default class HomeScreen extends React.Component {
           </View>
 
           <View style={styles.footerContainer}>
-            <TouchableOpacity onPress={handleSitePress} style={styles.touchLink}>
-              <Text style={styles.footerLinkText}>
-                Spot
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.footerContainer}>
-            <TouchableOpacity onPress={() => handleUpdatePress(this)} style={styles.touchLink}>
-              <Text style={styles.footerLinkText}>
-                Last Update: {this.state.portfolioBalanceLastUpdate}
-              </Text>
-            </TouchableOpacity>
+            <Text style={styles.footerLinkText}>
+              Last Update: {this.state.portfolioBalanceLastUpdate}
+            </Text>
           </View>
         </ScrollView>
       </View>
@@ -250,7 +244,7 @@ const styles = StyleSheet.create({
   tableContainer: { 
     flex: 1, 
     padding: 16, 
-    paddingTop: 30, 
+    paddingTop: 5, 
     backgroundColor: '#fff' 
   },
   head: {  
@@ -276,9 +270,6 @@ const styles = StyleSheet.create({
   },
   footerLinkText: {
     fontSize: 14,
-    color: '#2e78b7',
-  },
-  touchLink: {
-    paddingVertical: 5,
+    color: 'grey',
   },
 });
