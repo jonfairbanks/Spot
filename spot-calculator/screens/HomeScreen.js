@@ -1,16 +1,17 @@
-import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions, RefreshControl, AsyncStorage } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
 import moment from 'moment';
-import { withNavigationFocus } from "react-navigation";
 
 const SpotAPI = require ('../controllers/spot');
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
+    this._willFocusSubscription = props.navigation.addListener('willFocus', payload =>
+      this._onRefresh()
+    );
     this.state = {
       refreshing: false,
       tableHead: ['', 'Total Weight', 'Spot Price', 'Total Holdings'],
@@ -96,14 +97,6 @@ export default class HomeScreen extends React.Component {
     this.getPortfolioWeightsFromStorage();
   };
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.isFocused !== this.props.isFocused) {
-      // Use the `this.props.isFocused` boolean
-      // Call any action
-      this._onRefresh();
-    }
-  }
-
   render() {
     const state = this.state;
     return (
@@ -177,19 +170,9 @@ export default class HomeScreen extends React.Component {
           </View>
 
           <View style={styles.footerContainer}>
-            <TouchableOpacity onPress={handleSitePress} style={styles.touchLink}>
-              <Text style={styles.footerLinkText}>
-                Spot
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.footerContainer}>
-            <TouchableOpacity onPress={() => handleUpdatePress(this)} style={styles.touchLink}>
-              <Text style={styles.footerLinkText}>
-                Last Update: {this.state.portfolioBalanceLastUpdate}
-              </Text>
-            </TouchableOpacity>
+            <Text style={styles.footerLinkText}>
+              Last Update: {this.state.portfolioBalanceLastUpdate}
+            </Text>
           </View>
         </ScrollView>
       </View>
@@ -287,9 +270,6 @@ const styles = StyleSheet.create({
   },
   footerLinkText: {
     fontSize: 14,
-    color: '#2e78b7',
-  },
-  touchLink: {
-    paddingVertical: 5,
+    color: 'grey',
   },
 });
