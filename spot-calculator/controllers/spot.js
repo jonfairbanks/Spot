@@ -2,7 +2,15 @@ import { AsyncStorage } from 'react-native';
 import {SPOT_API} from 'react-native-dotenv';
 
 export const getPrices = () => {
-  return fetch(SPOT_API)
+  return fetch(SPOT_API + '/latest')
+  .then(response => response.json())
+  .catch(error =>{
+    console.error(error);
+  });
+}
+
+export const getChartData = () => {
+  return fetch(SPOT_API + '/week')
   .then(response => response.json())
   .catch(error =>{
     console.error(error);
