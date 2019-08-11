@@ -7,6 +7,14 @@ const spotSchema = new Schema({
   spotPrice: Number,
   updatedAt: Date,
   createdAt: Date,
+  dateDay: {
+    type: Date,
+    default: function () {
+      date = new Date()
+      return new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString().split("T")[0];
+    }
+  }
+
 }, { versionKey: false });
 
 spotSchema.plugin(mongooseStringQuery); // Enables query capabilities (e.g. ?foo=bar)
