@@ -31,7 +31,8 @@ export default class HomeScreen extends React.Component {
       platinum: null,
       platinumWeight: null,
       palladium: null,
-      palladiumWeight: null
+      palladiumWeight: null,
+      chartData: null,
     }
   }
 
@@ -42,6 +43,33 @@ export default class HomeScreen extends React.Component {
       this.setState({silver: prices.silver, gold: prices.gold, platinum: prices.platinum, palladium: prices.palladium})
       this.setTableSpotPrices();
       this.setPortfolioBalance();
+    });
+  }
+
+  getChartData() {
+    SpotAPI.getChartData()
+    .then(response => {
+      var weekday = new Array(7);
+      weekday[0] =  "Sun";
+      weekday[1] = "Mon";
+      weekday[2] = "Tue";
+      weekday[3] = "Wed";
+      weekday[4] = "Thu";
+      weekday[5] = "Fri";
+      weekday[6] = "Sat";
+
+      //iterate over response to populate labels and data
+      let chartData = {}
+      Object.keys(response).forEach(function(metal,index) {
+        let chart = {data:[], labels:[]}
+        response[metal].forEach(spot => {
+          var dayOfWeek = weekday[new Date(spot.day).getDay()];
+          chart.labels.push(dayOfWeek)
+          chart.data.push(spot.spotPrice)
+        })
+        chartData[metal] = chart
+      })
+      this.setState({chartData:chartData})
     });
   }
 
@@ -94,6 +122,7 @@ export default class HomeScreen extends React.Component {
 
   componentWillMount() {
     this.getLatestPrices();
+    this.getChartData();
     this.getPortfolioWeightsFromStorage();
   };
 
@@ -126,17 +155,9 @@ export default class HomeScreen extends React.Component {
           <View style={styles.chartContainer}>
             <LineChart
               data={{
-                labels: ['Sun', 'Mon', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat'],
+                labels: this.state.chartData ? this.state.chartData['gold'].labels : [],
                 datasets: [{
-                  data: [
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000,
-                    Math.random() * 1000
-                  ]
+                  data: this.state.chartData ? this.state.chartData['gold'].data : []
                 }]
               }}
               width={Dimensions.get('window').width - 10} // from react-native
