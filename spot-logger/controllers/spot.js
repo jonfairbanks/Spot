@@ -46,8 +46,7 @@ exports.getAggregateWeek = (req, res) => {
       "metal": {"$last": "$metal"},
       "spotPrice": {"$last": "$spotPrice"}
     }},
-    
-    { $sort: { day: -1 } },
+    { $sort: { day: 1 } },
     {$project: {
       day: {$toString: "$day"}, metal: 1, spotPrice: 1
     }},
@@ -58,16 +57,32 @@ exports.getAggregateWeek = (req, res) => {
       "metal": {"$last" : "$metal"},
       "data": {"$push": {"day": "$day", "spotPrice": "$spotPrice"}}     
     }},
-    
     { $project : {
       _id : 0,
-    }}
+    }},
+    {
+      $replaceRoot: {
+        newRoot: {
+          $arrayToObject: [
+            [
+              {
+                k: "$metal",
+                v: "$data"
+              }
+            ]
+          ]
+        }
+      }
+    }
 
 
   ]).then(spots => {
-    
-    
-    res.json(spots)
+    let combinedSpots = {}
+    spots.map(spot => {
+      Object.assign(combinedSpots, spot)
+    })
+    console.log(combinedSpots)
+    res.json(combinedSpots)
   })
   .catch(err => { console.log(err); res.status(422).send(err.errors) })
 };
