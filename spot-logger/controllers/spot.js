@@ -29,3 +29,45 @@ exports.getLatest = (req, res) => {
     })
     .catch(err => { console.log(err); res.status(422).send(err.errors) })
 };
+
+exports.getAggregateWeek = (req, res) => {
+  Spot.aggregate([
+    {
+      "$match": {
+          "dateDay": { "$exists": true, "$ne": null }
+      }
+    },
+    { $group : {
+      "_id": {
+        "day": "$dateDay",
+        "metal": "$metal"
+      },
+      "day": {"$last": "$dateDay"},
+      "metal": {"$last": "$metal"},
+      "spotPrice": {"$last": "$spotPrice"}
+    }},
+    
+    { $sort: { day: -1 } },
+    {$project: {
+      day: {$toString: "$day"}, metal: 1, spotPrice: 1
+    }},
+    { $group : {
+      "_id" : {
+        "metal": "$metal"
+      },
+      "metal": {"$last" : "$metal"},
+      "data": {"$push": {"day": "$day", "spotPrice": "$spotPrice"}}     
+    }},
+    
+    { $project : {
+      _id : 0,
+    }}
+
+
+  ]).then(spots => {
+    
+    
+    res.json(spots)
+  })
+  .catch(err => { console.log(err); res.status(422).send(err.errors) })
+};
