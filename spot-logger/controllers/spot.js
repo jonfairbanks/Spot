@@ -81,7 +81,7 @@ exports.getAggregateWeek = (req, res) => {
     spots.map(spot => {
       Object.assign(combinedSpots, spot)
     })
-    console.log(combinedSpots)
+    //console.log(combinedSpots)
     res.json(combinedSpots)
   })
   .catch(err => { console.log(err); res.status(422).send(err.errors) })

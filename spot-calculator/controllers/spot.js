@@ -3,7 +3,14 @@ import {SPOT_API} from 'react-native-dotenv';
 
 export const getPrices = () => {
   return fetch(SPOT_API + '/latest')
-  .then(response => response.json())
+  .then(response => {
+    if(response.status === 200) {
+      return response.json()
+    } else {
+      console.log({status: response.status, url: response.url})
+      return {}
+    }
+  })
   .catch(error =>{
     console.error(error);
   });
@@ -11,7 +18,14 @@ export const getPrices = () => {
 
 export const getChartData = () => {
   return fetch(SPOT_API + '/week')
-  .then(response => response.json())
+  .then(response => {
+    if(response.status === 200) {
+      return response.json()
+    } else {
+      console.log({status: response.status, url: response.url})
+      return {}
+    }
+  })
   .catch(error =>{
     console.error(error);
   });

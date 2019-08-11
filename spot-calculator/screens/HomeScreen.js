@@ -39,10 +39,12 @@ export default class HomeScreen extends React.Component {
   getLatestPrices() {
     SpotAPI.getPrices()
     .then(response => {
-      const prices = response.prices
-      this.setState({silver: prices.silver, gold: prices.gold, platinum: prices.platinum, palladium: prices.palladium})
-      this.setTableSpotPrices();
-      this.setPortfolioBalance();
+      if(response.hasOwnProperty('prices')){
+        const prices = response.prices
+        this.setState({silver: prices.silver, gold: prices.gold, platinum: prices.platinum, palladium: prices.palladium})
+        this.setTableSpotPrices();
+        this.setPortfolioBalance();
+      }
     });
   }
 
@@ -59,17 +61,23 @@ export default class HomeScreen extends React.Component {
       weekday[6] = "Sat";
 
       //iterate over response to populate labels and data
+      //console.log(response) <<debug
       let chartData = {}
-      Object.keys(response).forEach(function(metal,index) {
-        let chart = {data:[], labels:[]}
-        response[metal].forEach(spot => {
-          var dayOfWeek = weekday[new Date(spot.day).getDay()];
-          chart.labels.push(dayOfWeek)
-          chart.data.push(spot.spotPrice)
+      if(response.hasOwnProperty('gold')){
+        Object.keys(response).forEach(function(metal,index) {
+          let chart = {data:[], labels:[]}
+          if(response[metal].constructor === Array){
+            response[metal].forEach(spot => {
+              var dayOfWeek = weekday[new Date(spot.day).getDay()];
+              chart.labels.push(dayOfWeek)
+              chart.data.push(spot.spotPrice)
+            })
+            chartData[metal] = chart
+          }
         })
-        chartData[metal] = chart
-      })
-      this.setState({chartData:chartData})
+      }
+      //only set state if we have populated chartDatas
+      this.setState({chartData: Object.keys(chartData).length > 0 ? chartData : null})
     });
   }
 
