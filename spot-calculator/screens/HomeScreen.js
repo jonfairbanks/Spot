@@ -170,7 +170,8 @@ export default class HomeScreen extends React.Component {
               data={{
                 labels: this.state.chartData ? this.state.chartData['gold'].labels : [],
                 datasets: [{
-                  data: this.state.chartData ? this.state.chartData['gold'].data : []
+                  //data: this.state.chartData ? this.state.chartData['gold'].data : [],
+                  data: [ Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100, Math.random() * 100 ],
                 }]
               }}
               width={Dimensions.get('window').width - 10} // from react-native
