@@ -41,7 +41,12 @@ export default class HomeScreen extends React.Component {
     .then(response => {
       if(response.hasOwnProperty('prices')){
         const prices = response.prices
-        this.setState({silver: prices.silver, gold: prices.gold, platinum: prices.platinum, palladium: prices.palladium})
+        this.setState({
+          silver: prices.silver, 
+          gold: prices.gold, 
+          platinum: prices.platinum, 
+          palladium: prices.palladium
+        })
         this.setTableSpotPrices();
         this.setPortfolioBalance();
       }
@@ -52,7 +57,7 @@ export default class HomeScreen extends React.Component {
     SpotAPI.getChartData()
     .then(response => {
       var weekday = new Array(7);
-      weekday[0] =  "Sun";
+      weekday[0] = "Sun";
       weekday[1] = "Mon";
       weekday[2] = "Tue";
       weekday[3] = "Wed";
@@ -60,15 +65,15 @@ export default class HomeScreen extends React.Component {
       weekday[5] = "Fri";
       weekday[6] = "Sat";
 
-      //iterate over response to populate labels and data
-      //console.log(response) <<debug
+      // Iterate over response to populate labels and data
+      //console.log(response['gold']) // Enable for Chart debugging
       let chartData = {}
       if(response.hasOwnProperty('gold')){
-        Object.keys(response).forEach(function(metal,index) {
+        Object.keys(response).forEach(function(metal, index) {
           let chart = {data:[], labels:[]}
           if(response[metal].constructor === Array){
             response[metal].forEach(spot => {
-              var dayOfWeek = weekday[new Date(spot.day).getDay()];
+              let dayOfWeek = weekday[new Date(spot.day).getDay()];
               chart.labels.push(dayOfWeek)
               chart.data.push(spot.spotPrice)
             })
@@ -76,7 +81,7 @@ export default class HomeScreen extends React.Component {
           }
         })
       }
-      //only set state if we have populated chartDatas
+      // Only set state if we have populated chartData
       this.setState({chartData: Object.keys(chartData).length > 0 ? chartData : null})
     });
   }
@@ -107,7 +112,7 @@ export default class HomeScreen extends React.Component {
     let total = silverTot + goldTot + platinumTot + palladiumTot;
     this.setState({
       portfolioBalance: '$' + SpotAPI.formatMoney(total) + ' USD',
-      portfolioBalanceLastUpdate: moment().format('MMM Do, h:mm:ss a')
+      portfolioBalanceLastUpdate: moment().format('MMM Do, h:mm:ss A')      
     });
   }
 
@@ -148,7 +153,7 @@ export default class HomeScreen extends React.Component {
             />
           }
         >
-          {/*<DevelopmentModeNotice />*/}
+          <DevelopmentModeNotice />
           <View style={styles.totalContainer}>
             <TouchableOpacity onPress={() => handleTotalPress(this)} style={styles.touchLink}>
               <Text style={styles.totalDollarAmt}>
@@ -186,6 +191,7 @@ export default class HomeScreen extends React.Component {
                 borderRadius: 10
               }}
             />
+            
           </View>
 
           <View style={styles.tableContainer}>
@@ -225,16 +231,6 @@ function DevelopmentModeNotice() {
 
 function handleTotalPress(context) {
   context.props.navigation.navigate('Portfolio');
-}
-
-function handleUpdatePress(context) {
-  context.getLatestPrices();
-}
-
-function handleSitePress() {
-  WebBrowser.openBrowserAsync(
-    'https://github.com/Fairbanks-io/Spot'
-  );
 }
 
 const styles = StyleSheet.create({
